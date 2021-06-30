@@ -4,6 +4,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WebpackManifestPlugin = require('webpack-manifest-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 const settings = {
   distPath: path.join(__dirname, "dist"),
@@ -13,7 +14,7 @@ const settings = {
 const config = {
   entry: './app/app.js',
   output: {
-    filename: 'myBundle.[hash].js',
+    filename: 'js/myBundle.[hash].js',
     path: path.resolve(__dirname, 'dist')
   },
   plugins: [
@@ -55,6 +56,20 @@ const config = {
           "css-loader",
           "sass-loader"
         ]
+      },
+      {
+        test: /\.(ttf|eot|woff|woff2)$/,
+        use: {
+          loader: "file-loader"
+        },
+      },
+      {
+        test: /\.(jpe?g|png|gif|svg|ico)$/i,
+        use: [
+          {
+            loader: "file-loader"
+          }
+        ]
       }
     ]
   }
@@ -68,9 +83,19 @@ if (currentTask == 'build') {
       verbose: true
     }),
     new MiniCssExtractPlugin({
-      filename: 'main.[hash].css'
+      filename: 'css/main.[hash].css'
     }),
-    new WebpackManifestPlugin()
+    new WebpackManifestPlugin(),
+    new CopyPlugin([
+      {
+        from: path.join('app', 'assets/fonts'),
+        to: path.join('fonts')
+      },
+      {
+        from: path.join('app', 'assets/images'),
+        to: path.join('images')
+      }
+    ])
   )
 }
 
